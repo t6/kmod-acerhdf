@@ -1,0 +1,143 @@
+.\"
+.\" Copyright (c) 2015 Tobias Kortkamp
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd February 11, 2015
+.Dt ACERHDF 4
+.Os
+.Sh NAME
+.Nm acerhdf
+.Nd Acer Aspire One fan control
+.Sh DESCRIPTION
+The
+.Nm
+driver allows you to control the fans of some of the Acer Aspire One
+netbook models, so that they are not constantly running.  Other
+netbooks might be supported as well.  See
+.Sx SUPPORTED DEVICES
+for more details.  It is a port of the Linux kernel module with the
+same name.
+.Pp
+.Nm
+monitors the system temperature and turns the fan on if it is above
+the fan-on threshold, and turns it off again if the temperature drops
+below the fan-off threshold.
+.Sh SYSCTL VARIABLES
+.Bl -tag -width indent
+.It Va dev.acerhdf.0.enabled
+Set to 1, if
+.Nm
+should start controlling the fan.
+Defaults to 0, which means
+.Nm
+is not in control of the fan.
+.It Va dev.acerhdf.0.fanon
+The temperature at which the fan should be turned on.
+Defaults to 60.
+.It Va dev.acerhdf.0.fanoff
+The temperature at which the fan should be turned off again.
+Defaults to 53.
+.It Va dev.acerhdf.0.fanstate
+Read-only.  Returns the current fan state,
+.Va auto
+if the fan is running or
+.Va off .
+.It Va dev.acerhdf.0.interval
+Seconds to wait between temperature polls.  Defaults to 5 seconds.
+.It Va dev.acerhdf.0.temperature
+Read-only.  The current system temperature in degree Celsius.
+.El
+.Sh SUPPORTED DEVICES
+.Nm
+was tested on an Acer Aspire One A150 running FreeBSD 10.1.  The
+FreeBSD port will most likely support the same range of devices as the
+original Linux version.  Support also depends on the BIOS version of
+your computer.  Please refer to the source code for the BIOS
+versions that are supported for your particular device.
+.Pp
+.Bl -tag -width Ds -offset indent -compact
+.It Acer AO521
+.It Acer AO531h
+.It Acer AO751h
+.It Acer Aspire 1410
+.It Acer Aspire 1810T
+.It Acer Aspire 1810TZ
+.It Acer Aspire 1825PTZ
+.It Acer Aspire 5315
+.It Acer Aspire 5739G
+.It Acer Aspire 5755G
+.It Acer Aspire One 753
+.It Acer Aspire One A110
+.It Acer Aspire One A150
+.It Acer Extensa 5420
+.It Acer LT-10Q
+.It Acer TM8573T
+.It Acer TravelMate 7730G
+.It Gateway AOA110
+.It Gateway AOA150
+.It Gateway LT31
+.It Packard Bell AOA110
+.It Packard Bell AOA150
+.It Packard Bell DOA150
+.It Packard Bell DOTMA
+.It Packard Bell DOTMU
+.It Packard Bell DOTVR46
+.It Packard Bell ENBFT
+.El
+.Pp
+To determine your BIOS version run:
+.Bd -literal -offset indent
+kenv smbios.bios.version
+.Ed
+.Sh EXAMPLES
+To enable
+.Nm
+make sure it is installed in
+.Pa /boot/modules
+and add the following settings to your
+.Pa /boot/loader.conf :
+.Bd -literal -offset indent
+acerhdf_load="YES"
+.Ed
+.Pp
+and your
+.Pa /etc/sysctl.conf :
+.Bd -literal -offset indent
+dev.acerhdf.0.enabled=1
+.Ed
+.Pp
+You may want to adjust the fan-on and fan-off thresholds as well.
+.Sh SEE ALSO
+.Xr acpi 4 ,
+.Xr kenv 1 ,
+.Xr sysctl.conf 5 ,
+.Sh AUTHORS
+.An -nosplit
+.Nm
+was ported from Linux to FreeBSD by Tobias Kortkamp <tobias.kortkamp@gmail.com>.
+.Pp
+The original Linux version of this module was written by:
+.An Peter Feuerer Aq peter@pie.net
+and
+.An Borislav Petkov Aq bp@alien8.de .
