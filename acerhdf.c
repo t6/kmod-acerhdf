@@ -44,6 +44,11 @@
 #include <sys/bus.h>
 #include <dev/acpica/acpivar.h>
 
+#if __FreeBSD__ < 11
+// kern_getenv is getenv in FreeBSD < 11
+#define kern_getenv getenv
+#endif
+
 /*
  * According to the Atom N270 datasheet,
  * (http://download.intel.com/design/processor/datashts/320032.pdf) the
@@ -525,10 +530,9 @@ acerhdf_probe(device_t dev)
     char *vendor, *version, *product;
     const struct bios_settings *bt = NULL;
 
-    // XXX: getenv is kern_getenv in FreeBSD-CURRENT
-    vendor = getenv("smbios.bios.vendor");
-    version = getenv("smbios.bios.version");
-    product = getenv("smbios.system.product");
+    vendor = kern_getenv("smbios.bios.vendor");
+    version = kern_getenv("smbios.bios.version");
+    product = kern_getenv("smbios.system.product");
 
     if (!vendor || !version || !product) {
         if (bootverbose)
