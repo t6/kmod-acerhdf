@@ -3,7 +3,7 @@
  *           of the aspire one netbook, turns on/off the fan
  *           as soon as the upper/lower threshold is reached.
  *
- * (C) 2015 - Tobias Kortkamp   tobias.kortkamp@gmail.com
+ * (C) 2015 - Tobias Kortkamp   t@tobik.me
  *
  * Based on the Linux kernel module "acerhdf":
  *
