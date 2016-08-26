@@ -249,11 +249,19 @@ ACPI_SERIAL_DECL(acerhdf, "Acer Aspire One fan control");
 
 static const struct bios_settings *bios_cfg = NULL;
 
-static ACPI_STATUS acerhdf_set_fanstate(struct acerhdf_softc *sc,
-                                        acerhdf_fanstate state);
-static ACPI_STATUS acerhdf_get_fanstate(struct acerhdf_softc *sc,
-                                        acerhdf_fanstate *state);
-static ACPI_STATUS acerhdf_get_temperature(struct acerhdf_softc *sc, int *t);
+static ACPI_STATUS acerhdf_set_fanstate(struct acerhdf_softc *,
+                                        acerhdf_fanstate);
+static ACPI_STATUS acerhdf_get_fanstate(struct acerhdf_softc *,
+                                        acerhdf_fanstate *);
+static ACPI_STATUS acerhdf_get_temperature(struct acerhdf_softc *, int *);
+static int acerhdf_sysctl_fanon(SYSCTL_HANDLER_ARGS);
+static int acerhdf_sysctl_fanoff(SYSCTL_HANDLER_ARGS);
+static int acerhdf_sysctl_temperature(SYSCTL_HANDLER_ARGS);
+static int acerhdf_sysctl_interval(SYSCTL_HANDLER_ARGS);
+static int acerhdf_sysctl_enabled(SYSCTL_HANDLER_ARGS);
+static void acerhdf_task(struct acerhdf_softc *, int);
+static void acerhdf_tick(void *);
+static int str_starts_with(const char *, const char *);
 static int acerhdf_probe(device_t dev);
 static int acerhdf_attach(device_t dev);
 static int acerhdf_detach(device_t dev);
@@ -465,8 +473,8 @@ acerhdf_sysctl_fanstate(SYSCTL_HANDLER_ARGS)
 }
 
 static void
-acerhdf_tick(void *data) {
-    struct acerhdf_softc *sc = data;
+acerhdf_task(struct acerhdf_softc *sc, int pending __unused)
+{
     int error;
 
     ACPI_SERIAL_BEGIN(acerhdf);
@@ -500,6 +508,12 @@ acerhdf_tick(void *data) {
  reset:
     ACPI_SERIAL_END(acerhdf);
     callout_reset(&sc->tick_handle, sc->interval * hz, acerhdf_tick, sc);
+}
+
+static void
+acerhdf_tick(void *data) {
+    struct acerhdf_softc *sc = data;
+    AcpiOsExecute(OSL_NOTIFY_HANDLER, (void *)acerhdf_task, sc);
 }
 
 /* checks if str begins with start */
