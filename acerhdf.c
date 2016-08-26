@@ -38,6 +38,7 @@
 #include <sys/param.h>
 #include <sys/module.h>
 #include <sys/kernel.h>
+#include <sys/reboot.h>
 #include <sys/types.h>
 #include <sys/systm.h>
 #include <contrib/dev/acpica/include/acpi.h>
@@ -490,7 +491,10 @@ acerhdf_task(struct acerhdf_softc *sc, int pending __unused)
     }
 
     if (temperature >= ACERHDF_TEMP_CRIT) {
-        panic("Critical system temperature %i\n", temperature);
+        device_printf(sc->dev,
+                      "WARNING - current temperature (%d C) exceeds safe limits\n",
+                      temperature);
+        shutdown_nice(RB_POWEROFF);
     }
 
     acerhdf_fanstate fanstate;
