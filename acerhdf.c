@@ -190,7 +190,7 @@ static const struct bios_settings bios_tbl[] = {
         {"Acer", "Aspire 5315", "V1.19", 0x93, 0xac, {0x14, 0x04}, 1},
         /* Acer Aspire 5739 */
         {"Acer", "Aspire 5739G", "V1.3311", 0x55, 0x58, {0x20, 0x00}, 0},
-        /* Acer Aspire 7751 */
+        /* Acer Aspire 7551 */
         {"Acer", "Aspire 7551", "V1.18", 0x93, 0xa8, {0x14, 0x04}, 1},
         /* Acer TravelMate 7730 */
         {"Acer", "TravelMate 7730G", "v0.3509", 0x55, 0x58, {0xaf, 0x00}, 0},
